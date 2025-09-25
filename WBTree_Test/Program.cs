@@ -3,10 +3,14 @@
 using AlgoQuora;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Numerics;
 
 namespace TestSortedList; 
 
 internal class Program {
+    static void Assert(bool v) { if (!v) throw new Exception("bad"); }
     static void Test() {
 
         Random rnd = new();
@@ -23,6 +27,22 @@ internal class Program {
         }
 
         do {
+
+            // QuickList
+            {
+                var quick = new QuickList<int>();
+                var checker = new List<int>();
+                for (int j = 0; j < 1000; j++) {
+                    var v = next();
+                    var i = rnd.Next(0, checker.Count);
+                    quick.InsertAt(i, v);
+                    checker.Insert(i, v);
+                    v = next();
+                    quick.Add(v);
+                    checker.Add(v);
+                }
+                Assert(checker.SequenceEqual(quick));
+            }
 
             // remove all test
             {
@@ -84,12 +104,16 @@ internal class Program {
 
     static void Main(string[] args) {
         Test();
-        BenchmarkRunner.Run(typeof(Program).Assembly, new Config());
+        BenchmarkRunner.Run(typeof(Program).Assembly
+            //, new Config()
+            );
 
     }
 }
 
+
 //[MemoryDiagnoser]
+//[DisassemblyDiagnoser]
 public class MyBenchmarks {
     int N = 300000;
     Random rnd = new(44);
@@ -105,7 +129,6 @@ public class MyBenchmarks {
 
     SortedSet<int> sbt = new();
     Set<int> set = new();
-
 
     [Benchmark]
     public void WBT_Set_Insert() {

@@ -15,7 +15,7 @@ namespace AlgoQuora {
         }
     }
 
-    public class Map<TKey, TValue> : _WBTree<MapRecord<TKey,TValue>> {
+    public class Map<TKey, TValue> : _WBTreeSorted<MapRecord<TKey,TValue>> {
         protected IComparer<TKey> comparerKey;
         [MethodImpl(256)] protected int CompareKey(TKey v1, TKey v2) => comparerKey.Compare(v1, v2);
         public Map() {

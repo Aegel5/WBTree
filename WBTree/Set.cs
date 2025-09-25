@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace AlgoQuora {
-    public class Set<T> : _WBTree<T> {
+    public class Set<T> : _WBTreeSorted<T> {
         public Set(IEnumerable<T> col) { foreach (var item in col) { Add(item); } }
         public Set() { }
         public T this[Index key] {
@@ -20,6 +20,8 @@ namespace AlgoQuora {
         public BSResult MoreEq(T val, int l = 0, int r = int.MaxValue) => BinarySearch_First(x => Compare(x, val) >= 0, l, r);
         public BSResult Less(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last(x => Compare(x, val) < 0, l, r);
         public BSResult LessEq(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last(x => Compare(x, val) <= 0, l, r);
+        public int IndexOf(T val) => MoreEq(val);
+
     }
 
     public class MultiSet<T> : Set<T> {

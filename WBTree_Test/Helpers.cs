@@ -1,4 +1,5 @@
 ﻿using AlgoQuora;
+using Microsoft.Diagnostics.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +64,7 @@ class SortedListChecked<T> : MultiSet<T> where T : new() {
 }
 
 class SortedList_Tester<T> where T : new() {
+    static void Assert(bool v) { if (!v) throw new Exception("bad"); }
     public SortedListChecked<T> lst = new();
     List<T> checker = new();
 
@@ -121,6 +123,15 @@ class SortedList_Tester<T> where T : new() {
     }
     public void Contains(T v) {
         if (lst.Contains(v) != checker.Contains(v)) throw new Exception("bad");
+    }
+    public void More(T v) {
+        var i1 = lst.More(v);
+        int i2 = 0;
+        for (i2 = 0; i2 < checker.Count; i2++) {
+            if (Compare(checker[i2], v)>0) break;
+        }
+        Assert(i1==i2);
+        Assert(i1.Ok == (i1.Index >= 0 && i1.Index < checker.Count));
     }
     public void Check() {
         lst.SelfCheckRules();

@@ -24,7 +24,7 @@ namespace AlgoQuora {
         [IM(256)] public void Clear() { root = nil; }
         [IM(256)] Node rotateR(Node t, Node l) { t.left = l.right; l.right = t; l.cnt = t.cnt; if (!is_nil(l.left)) t.cnt -= l.left.cnt; t.cnt--; return l; }
         [IM(256)] Node rotateL(Node t, Node r) { t.right = r.left; r.left = t; r.cnt = t.cnt; if (!is_nil(r.right)) t.cnt -= r.right.cnt; t.cnt--; return r; }
-        protected const double ALPHA = 0.292f;
+        protected const double ALPHA = 0.292;
         [IM(256)] protected bool too_big(int cnt, int total) => cnt > total * (1 - ALPHA);
         [IM(256)] protected bool too_small(int cnt, int total) => cnt < total * ALPHA - 1;
         [IM(256)] protected Node balanceR(Node t) { if (too_small(cnt_safe(t.right.right), t.cnt)) { t.right = rotateR(t.right, t.right.left); } return rotateL(t, t.right); }
@@ -127,6 +127,7 @@ namespace AlgoQuora {
             public int Index { get; init; }
             public bool Ok { get; init; }
             [IM(256)] public static implicit operator int(BSResult value) => value.Index;
+            [IM(256)] public static implicit operator Index(BSResult value) => value.Index;
             [IM(256)] public static implicit operator long(BSResult value) => value.Index;
             public BSResult(int i, bool ok) { Index = i; Ok = ok; }
         }
@@ -151,12 +152,12 @@ namespace AlgoQuora {
         }
         [IM(256)] public BSResult BinarySearch_Last(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
             int i = _First(x => !check(x), l) - 1;
-            if (i > r) i = r;
+            if (i > r) i = Math.Min(r, Count-1);
             return new(i, i >= l);
         }
         [IM(256)] public BSResult BinarySearch_First(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
             int i = _First(check, l);
-            return new(i, i <= r);
+            return new(i, i <= Math.Min(r,Count-1));
         }
     }
 }

@@ -8,10 +8,7 @@ namespace AlgoQuora {
     public class Set<T> : _WBTreeSorted<T> {
         public Set(IEnumerable<T> col) { foreach (var item in col) { Add(item); } }
         public Set() { }
-        public T this[Index key] {
-            get => get_at(key).val;
-            //set => get_at(key).node = value;
-        }
+        public T this[Index key] => get_at(key).val;
         public bool Contains(T value) => _Contains(value);
         public int CountOf(T node) => Contains(node) ? 1 : 0;
         public bool Add(T node) => _Add(node, skip_if_equal: true).added;

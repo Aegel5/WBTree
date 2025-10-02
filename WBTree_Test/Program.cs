@@ -94,6 +94,7 @@ internal class Program {
                         tester.Check();
                     }
                     tester.Contains(next());
+                    tester.More(next());
                 }
             }
             Console.WriteLine("Test OK");

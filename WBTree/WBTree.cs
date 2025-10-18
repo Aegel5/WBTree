@@ -100,13 +100,15 @@ namespace AlgoQuora {
             }
             return min;
         }
-        public void RemoveAt(Index index) {
+        public T RemoveAt(Index index) {
             var i = ActualIndex(index);
             Debug.Assert(i >= 0 && i < Count);
-            int key = i+1; 
+            int key = i+1;
+            T res;
             void func(ref Node t) {
                 var cur = t.cnt - cnt_safe(t.right);
                 if (key == cur) {
+                    res = t.val;
                     t = merge(t.left, t.right);
                     return;
                 }
@@ -122,6 +124,7 @@ namespace AlgoQuora {
                 }
             }
             func(ref root);
+            return res;
         }
         public struct BSResult {
             public int Index { get; init; }

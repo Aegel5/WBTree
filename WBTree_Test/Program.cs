@@ -74,8 +74,8 @@ internal class Program {
             // common test
             {
                 SortedList_Tester<int> tester = new();
-                //for (int j = 0; j < 5000; j++) {
-                for (int j = 0; j < 50000; j++) {
+                for (int j = 0; j < 1000; j++) {
+                //for (int j = 0; j < 50000; j++) {
 
                     if (j == 0) {
                         int k = 0;

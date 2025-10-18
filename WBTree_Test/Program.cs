@@ -14,7 +14,10 @@ internal class Program {
     static void Test() {
 
         Random rnd = new();
-        int next() { return rnd.Next(0, 100); }
+        int next() { 
+            //return rnd.Next(0, 100);
+            return rnd.Next(0, 10000);
+        }
 
         // avr depth
         {
@@ -26,52 +29,53 @@ internal class Program {
             Console.WriteLine($"avr depth: {a.tot_depth / a.cnt_depth}, max={a.max_depth}");
         }
 
+        // QuickList
+        {
+            var quick = new QuickList<int>();
+            var checker = new List<int>();
+            for (int j = 0; j < 1000; j++) {
+                var v = next();
+                var i = rnd.Next(0, checker.Count);
+                quick.InsertAt(i, v);
+                checker.Insert(i, v);
+                v = next();
+                quick.Add(v);
+                checker.Add(v);
+            }
+            Assert(checker.SequenceEqual(quick));
+        }
+
+        // remove all test
+        {
+            for (int j = 0; j < 10; j++) {
+                SortedListChecked<int> a = new();
+                for (int i = 0; i < 1000; i++) {
+                    a.Add(rnd.Next(0, 10));
+                }
+                a.RemoveAllOf(rnd.Next(0, 10));
+                a.SelfCheckRules();
+            }
+        }
+
+        // map test
+        {
+            Map<int, int> a = new();
+            SortedDictionary<int, int> dict = new();
+            for (int i = 0; i < 500; i++) {
+                var v = rnd.Next(0, 5000);
+                a[v]++; if (!dict.TryAdd(v, 1)) dict[v]++;
+            }
+            if (!dict.Keys.SequenceEqual(a.Select(x => x.Key))) throw new Exception("bad");
+            if (!dict.Values.SequenceEqual(a.Select(x => x.Value))) throw new Exception("bad");
+        }
+
         do {
-
-            // QuickList
-            {
-                var quick = new QuickList<int>();
-                var checker = new List<int>();
-                for (int j = 0; j < 1000; j++) {
-                    var v = next();
-                    var i = rnd.Next(0, checker.Count);
-                    quick.InsertAt(i, v);
-                    checker.Insert(i, v);
-                    v = next();
-                    quick.Add(v);
-                    checker.Add(v);
-                }
-                Assert(checker.SequenceEqual(quick));
-            }
-
-            // remove all test
-            {
-                for (int j = 0; j < 10; j++) {
-                    SortedListChecked<int> a = new();
-                    for (int i = 0; i < 1000; i++) {
-                        a.Add(rnd.Next(0, 10));
-                    }
-                    a.RemoveAllOf(rnd.Next(0, 10));
-                    a.SelfCheckRules();
-                }
-            }
-
-            // map test
-            {
-                Map<int, int> a = new();
-                SortedDictionary<int, int> dict = new();
-                for (int i = 0; i < 5000; i++) {
-                    var v = rnd.Next(0, 5000);
-                    a[v]++; if (!dict.TryAdd(v, 1)) dict[v]++;
-                }
-                if (!dict.Keys.SequenceEqual(a.Select(x => x.Key))) throw new Exception("bad");
-                if (!dict.Values.SequenceEqual(a.Select(x => x.Value))) throw new Exception("bad");
-            }
 
             // common test
             {
                 SortedList_Tester<int> tester = new();
-                for (int j = 0; j < 5000; j++) {
+                //for (int j = 0; j < 5000; j++) {
+                for (int j = 0; j < 50000; j++) {
 
                     if (j == 0) {
                         int k = 0;
@@ -98,7 +102,9 @@ internal class Program {
                 }
             }
             Console.WriteLine("Test OK");
-        } while (false);
+        } 
+        while (false);
+        //while (true);
 
 
     }

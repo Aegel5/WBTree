@@ -13,17 +13,17 @@ internal class Program {
     static void Assert(bool v) { if (!v) throw new Exception("bad"); }
     static void Test() {
 
-        Random rnd = new();
-        int next() { 
+        Random rnd = new(1);
+        int next(int max = 10000) { 
             //return rnd.Next(0, 100);
-            return rnd.Next(0, 10000);
+            return rnd.Next(0, max);
         }
 
         // avr depth
         {
             SortedListChecked<int> a = new();
-            for (int q = 0; q < 1000000; q++) {
-                a.Add(rnd.Next(0, 1000000));
+            for (int q = 0; q < 100000; q++) {
+                a.Add(rnd.Next(0, 100000));
             }
             a.SelfCheckRules();
             Console.WriteLine($"avr depth: {a.tot_depth / a.cnt_depth}, max={a.max_depth}");
@@ -55,6 +55,49 @@ internal class Program {
                 a.RemoveAllOf(rnd.Next(0, 10));
                 a.SelfCheckRules();
             }
+        }
+
+        // merge test
+        {
+            int max_split = 0;
+            int max_merge = 0;
+            while (true) {
+
+                SortedListChecked<int> a = new();
+                SortedListChecked<int> b = new();
+                for (int i = 0; i < 1000000; i++) a.Add(next(1000000));
+                var lst = a.ToArray();
+                a.rototions_cnt = 0;
+                //a.call_cnt = 0;
+                var (c, d) = a.Split(next(lst.Length));
+                max_split = Math.Max(max_split, a.rototions_cnt);
+                Console.WriteLine($"split rots: {a.rototions_cnt}, max = {max_split}");
+
+                Assert(c.Count + d.Count == lst.Length);
+                c.SelfCheckRules();
+                d.SelfCheckRules();
+                //for (int i = 0; i < next(10000); i++) {
+                //    if (c.Count > 0) {
+                //        c.RemoveAt(next(c.Count - 1));
+                //        c.Add(next(0));
+                //    }
+                //    if (d.Count > 0) {
+                //        d.RemoveAt(next(d.Count - 1));
+                //        d.Add(10000000);
+                //    }
+                //}
+
+                c.rototions_cnt = 0;
+                c.Append(d);
+                max_merge = Math.Max(max_merge, a.rototions_cnt);
+                Console.WriteLine($"merge rots: {c.rototions_cnt}, max = {max_merge}");
+
+                c.SelfCheckRules();
+                Assert(lst.SequenceEqual(c));
+                //Console.WriteLine(a.avr_depth);
+                //Console.WriteLine(a.d_test);
+            }
+
         }
 
         // map test

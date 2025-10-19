@@ -27,18 +27,30 @@ namespace AlgoQuora {
         protected const double ALPHA = 0.292;
         [IM(256)] protected bool too_big(int cnt, int total) => cnt > total * (1 - ALPHA);
         [IM(256)] protected bool too_small(int cnt, int total) => cnt < total * ALPHA - 1;
-        [IM(256)] protected Node balanceR(Node t) { if (too_small(cnt_safe(t.right.right), t.cnt)) { t.right = rotateR(t.right, t.right.left); } return rotateL(t, t.right); }
-        [IM(256)] protected Node balanceL(Node t) { if (too_small(cnt_safe(t.left.left), t.cnt)) t.left = rotateL(t.left, t.left.right); return rotateR(t, t.left); }
+        public int rototions_cnt = 0;
+        [IM(256)] protected Node balanceR(Node t) { 
+            rototions_cnt++; 
+            if (too_small(cnt_safe(t.right.right), t.cnt)) { t.right = rotateR(t.right, t.right.left); } return rotateL(t, t.right); 
+        }
+        [IM(256)] protected Node balanceL(Node t) { 
+            rototions_cnt++; 
+            if (too_small(cnt_safe(t.left.left), t.cnt)) t.left = rotateL(t.left, t.left.right); return rotateR(t, t.left); 
+        }
         [IM(256)] protected bool balance_if_overflowR(ref Node t) { if (too_big(t.right.cnt, t.cnt)) { t = balanceR(t); return true; } return false; }
         [IM(256)] protected bool balance_if_overflowL(ref Node t) { if (too_big(t.left.cnt, t.cnt)) { t = balanceL(t); return true; } return false; }
+
         [IM(256)] protected void balance_if_overflowR_rec(ref Node t) {
+            //call_cnt++;
             if (balance_if_overflowR(ref t)) {
                 if (!is_nil(t.left.right))
                     balance_if_overflowR_rec(ref t.left);
                 balance_if_overflowR(ref t);
             }
         }
+
+        //public int call_cnt = 0;
         [IM(256)] protected void balance_if_overflowL_rec(ref Node t) {
+            //call_cnt++;
             if (balance_if_overflowL(ref t)) {
                 if (!is_nil(t.right.left))
                     balance_if_overflowL_rec(ref t.right);
@@ -99,6 +111,43 @@ namespace AlgoQuora {
                 balance_if_overflowR_rec(ref min);
             }
             return min;
+        }
+
+        protected (Node, Node) split(int i) {
+            void upd(Node t) { t.cnt = cnt_safe(t.left) + cnt_safe(t.right) + 1; }
+            void func(Node t, ref Node left, ref Node right, int key) {
+                var cnt_left = cnt_safe(t.left);
+                if (key <= cnt_left) {
+
+                    if (cnt_left == 0) {
+                        left = nil;
+                    } else {
+                        func(t.left, ref left, ref t.left, key);
+                    }
+                    right = t;
+
+                    upd(t);
+                    if(!is_nil(t.right)) 
+                        balance_if_overflowR_rec(ref right);
+                } else {
+                    if (is_nil(t.right)) {
+                        right = nil;
+                    } else {
+                        func(t.right, ref t.right, ref right, key - cnt_left - 1);
+                    }
+                    left = t;
+
+                    upd(t);
+                    if (!is_nil(t.left)) 
+                        balance_if_overflowL_rec(ref left);
+                }
+
+            }
+            Node left = nil;
+            Node right = nil;
+            func(root, ref left, ref right, i);
+            root = nil;
+            return (left, right);
         }
         public T RemoveAt(Index index) {
             var i = ActualIndex(index);

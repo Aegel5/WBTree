@@ -11,6 +11,7 @@ class SortedListChecked<T> : MultiSet<T> where T : new() {
     public double tot_depth = 0;
     public int cnt_depth = 0;
     public int max_depth = 0;
+    public double avr_depth = 0;
     public bool AddUnique(T val) => _Add(val, true).added;
     public void extract_min_test() {
         extract_min(ref root);
@@ -19,6 +20,14 @@ class SortedListChecked<T> : MultiSet<T> where T : new() {
     public void Append(SortedListChecked<T> t) {
         root = merge(root, t.root);
         t.root = null;
+    }
+
+    SortedListChecked(Node _root) { root = _root; }
+    public SortedListChecked() { }
+
+    public (SortedListChecked<T>, SortedListChecked<T>) Split(int index) {
+        var (l, r) = split(index);
+        return (new(l), new(r));
     }
 
     public void MaxLen() {
@@ -56,6 +65,7 @@ class SortedListChecked<T> : MultiSet<T> where T : new() {
             if (is_nil(t.left) && is_nil(t.right)) {
                 tot_depth += d;
                 cnt_depth++;
+                avr_depth = tot_depth / cnt_depth;
                 max_depth = Math.Max(max_depth, d);
             }
         }

@@ -1,8 +1,9 @@
-﻿using System.Collections;
+﻿global using IM = System.Runtime.CompilerServices.MethodImplAttribute;
+using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using IM = System.Runtime.CompilerServices.MethodImplAttribute;
+
 
 namespace AlgoQuora {
     public class _WBTree<T> : IEnumerable<T> {
@@ -27,13 +28,13 @@ namespace AlgoQuora {
         protected const double ALPHA = 0.292;
         [IM(256)] protected bool too_big(int cnt, int total) => cnt > total * (1 - ALPHA);
         [IM(256)] protected bool too_small(int cnt, int total) => cnt < total * ALPHA - 1;
-        public int rototions_cnt = 0;
+        //public int rototions_cnt = 0;
         [IM(256)] protected Node balanceR(Node t) { 
-            rototions_cnt++; 
+            //rototions_cnt++; 
             if (too_small(cnt_safe(t.right.right), t.cnt)) { t.right = rotateR(t.right, t.right.left); } return rotateL(t, t.right); 
         }
         [IM(256)] protected Node balanceL(Node t) { 
-            rototions_cnt++; 
+            //rototions_cnt++; 
             if (too_small(cnt_safe(t.left.left), t.cnt)) t.left = rotateL(t.left, t.left.right); return rotateR(t, t.left); 
         }
         [IM(256)] protected bool balance_if_overflowR(ref Node t) { if (too_big(t.right.cnt, t.cnt)) { t = balanceR(t); return true; } return false; }
@@ -58,13 +59,17 @@ namespace AlgoQuora {
             }
         }
         IEnumerable<T> left_to_right(Node t) {
-            if (is_nil(t)) yield break;
-            foreach (var item in left_to_right(t.left)) yield return item;
+            if(!is_nil(t.left))
+                foreach (var item in left_to_right(t.left)) 
+                    yield return item;
             yield return t.val;
-            foreach (var item in left_to_right(t.right)) yield return item;
+            if(!is_nil(t.right))
+                foreach (var item in left_to_right(t.right)) 
+                    yield return item;
         }
-        public IEnumerator<T> GetEnumerator() => left_to_right(root).GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => left_to_right(root).GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => 
+            is_nil(root) ? Enumerable.Empty<T>().GetEnumerator() : left_to_right(root).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         protected Node get_at(int pos) {
             Debug.Assert(pos >= 0 && pos < Count);
             var t = root;
@@ -93,7 +98,7 @@ namespace AlgoQuora {
             }
             return min;
         }
-        [IM(256)] protected Node merge(Node left, Node right) {
+        [IM(256)] protected Node merge(Node left, Node right, bool from_remove_1 = false) {
             if (left == null) return right;
             if (right == null) return left;
             Node min;
@@ -105,10 +110,14 @@ namespace AlgoQuora {
             min.left = left;
             var r_cnt = cnt_safe(min.right);
             min.cnt = left.cnt + r_cnt + 1;
-            if (left.cnt > r_cnt) {
-                balance_if_overflowL_rec(ref min);
+            if (from_remove_1) {
+                balance_if_overflowL(ref min);
             } else {
-                balance_if_overflowR_rec(ref min);
+                if (left.cnt > r_cnt) {
+                    balance_if_overflowL_rec(ref min);
+                } else {
+                    balance_if_overflowR_rec(ref min);
+                }
             }
             return min;
         }

@@ -28,7 +28,7 @@ namespace AlgoQuora {
         public ref TValue this[TKey key] => ref _Add(rec(key), skip_if_equal: true).node.val.Value;
         public bool Contains(TKey key) => _Contains(rec(key));
         public int CountOf(TKey key) => Contains(key) ? 1 : 0;
-        public bool Remove(TKey key) => _Remove(rec(key)) > 0;
+        public bool Remove(TKey key) => _Remove(rec(key));
         public MapRecord<TKey, TValue> ByIndex(Index i) => get_at(i).val;
         public ref TValue ByIndexValue(Index i) => ref get_at(i).val.Value;
         public BSResult More(TKey val, int l = 0, int r = int.MaxValue) => BinarySearch_First(x => CompareKey(x.Key, val) > 0, l, r);
@@ -38,7 +38,7 @@ namespace AlgoQuora {
     }
     public class MultiMap<TKey, TValue> : Map<TKey, TValue> {
         new public bool Add(TKey key, TValue value)  => _Add(rec(key,value), skip_if_equal: false).added;
-        public int RemoveAllOf(TKey key) => _Remove(rec(key), all:true);
+        public int RemoveAllOf(TKey key) => _RemoveAll(rec(key));
         new public int CountOf(TKey key) => More(key) - MoreEq(key);
     }
 }

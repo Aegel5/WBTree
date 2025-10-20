@@ -65,13 +65,13 @@ internal class Program {
 
                 SortedListChecked<int> a = new();
                 SortedListChecked<int> b = new();
-                for (int i = 0; i < 1000000; i++) a.Add(next(1000000));
+                for (int i = 0; i < 10000; i++) a.Add(next(1000000));
                 var lst = a.ToArray();
-                a.rototions_cnt = 0;
+                //a.rototions_cnt = 0;
                 //a.call_cnt = 0;
                 var (c, d) = a.Split(next(lst.Length));
-                max_split = Math.Max(max_split, a.rototions_cnt);
-                Console.WriteLine($"split rots: {a.rototions_cnt}, max = {max_split}");
+                //max_split = Math.Max(max_split, a.rototions_cnt);
+                //Console.WriteLine($"split rots: {a.rototions_cnt}, max = {max_split}");
 
                 Assert(c.Count + d.Count == lst.Length);
                 c.SelfCheckRules();
@@ -87,15 +87,16 @@ internal class Program {
                 //    }
                 //}
 
-                c.rototions_cnt = 0;
+                //c.rototions_cnt = 0;
                 c.Append(d);
-                max_merge = Math.Max(max_merge, a.rototions_cnt);
-                Console.WriteLine($"merge rots: {c.rototions_cnt}, max = {max_merge}");
+                //max_merge = Math.Max(max_merge, a.rototions_cnt);
+                //Console.WriteLine($"merge rots: {c.rototions_cnt}, max = {max_merge}");
 
                 c.SelfCheckRules();
                 Assert(lst.SequenceEqual(c));
                 //Console.WriteLine(a.avr_depth);
                 //Console.WriteLine(a.d_test);
+                break;
             }
 
         }

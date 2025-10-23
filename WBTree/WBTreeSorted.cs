@@ -29,7 +29,7 @@ namespace AlgoQuora {
                     count = 1;
                     count += func(ref t.left);
                     count += func(ref t.right);
-                    t = merge(t.left, t.right);
+                    t = merge_any(t.left, t.right);
                     return count;
                 }
                 else if (cmp < 0) {
@@ -53,7 +53,7 @@ namespace AlgoQuora {
                 int cmp = Compare(node, t.val);
                 if (cmp == 0) {
                     deleted = true;
-                    t = merge(t.left, t.right, true);
+                    t = merge_balanced(t.left, t.right);
                     return;
                 }
                 else if (cmp < 0) {

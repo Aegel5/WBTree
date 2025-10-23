@@ -14,11 +14,11 @@ class SortedListChecked<T> : MultiSet<T> where T : new() {
     public double avr_depth = 0;
     public bool AddUnique(T val) => _Add(val, true).added;
     public void extract_min_test() {
-        extract_min(ref root);
+        extract_leftmost(ref root);
     }
 
     public void Append(SortedListChecked<T> t) {
-        root = merge(root, t.root);
+        root = merge_any(root, t.root);
         t.root = null;
     }
 

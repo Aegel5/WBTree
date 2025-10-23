@@ -84,41 +84,60 @@ namespace AlgoQuora {
                 }
             }
         }
-        [IM(256)] protected Node extract_min(ref Node t) {
+        protected Node extract_leftmost(ref Node t) {
             Node min;
+            int cnt;
             if (is_nil(t.left.left)) {
                 min = t.left;
                 t.left = t.left.right;
-                t.cnt--;
-                if (too_small(cnt_safe(t.left), t.cnt)) t = balanceR(t);
+                cnt = cnt_safe(t.left);
             } else {
-                min = extract_min(ref t.left);
-                t.cnt--;
-                if(too_small(t.left.cnt, t.cnt)) t = balanceR(t);
+                min = extract_leftmost(ref t.left);
+                cnt = t.left.cnt;
             }
+            t.cnt--;
+            if (too_small(cnt, t.cnt)) t = balanceR(t);
             return min;
         }
-        [IM(256)] protected Node merge(Node left, Node right, bool from_remove_1 = false) {
+
+        // оптимизированная версия для сбалансированных между собой узлов.
+        protected Node merge_balanced(Node left, Node right) {
             if (left == null) return right;
             if (right == null) return left;
-            Node min;
-            if (right.left == null) min = right;
-            else {
-                min = extract_min(ref right);
-                min.right = right;
+
+            if (right.left == null) { 
+                right.left = left; 
+                right.cnt += left.cnt;
+                balance_if_overflowL(ref right);
+                return right; 
             }
+
+            var min = extract_leftmost(ref right);
+            min.right = right;
             min.left = left;
-            var r_cnt = cnt_safe(min.right);
-            min.cnt = left.cnt + r_cnt + 1;
-            if (from_remove_1) {
-                balance_if_overflowL(ref min);
-            } else {
-                if (left.cnt > r_cnt) {
-                    balance_if_overflowL_rec(ref min);
-                } else {
-                    balance_if_overflowR_rec(ref min);
-                }
+            min.cnt = left.cnt + right.cnt + 1;
+            balance_if_overflowL(ref min);
+            return min;
+        }
+
+
+        protected Node merge_any(Node left, Node right) {
+            if (left == null) return right;
+            if (right == null) return left;
+
+            if (right.left == null) {
+                right.left = left;
+                right.cnt += left.cnt;
+                balance_if_overflowL_rec(ref right);
+                return right;
             }
+
+            var min = extract_leftmost(ref right);
+            min.right = right;
+            min.left = left;
+            min.cnt = left.cnt + right.cnt + 1;
+            if (left.cnt > right.cnt) balance_if_overflowL_rec(ref min);
+            else balance_if_overflowR_rec(ref min);
             return min;
         }
 
@@ -167,7 +186,7 @@ namespace AlgoQuora {
                 var cur = t.cnt - cnt_safe(t.right);
                 if (key == cur) {
                     res = t.val;
-                    t = merge(t.left, t.right);
+                    t = merge_balanced(t.left, t.right);
                     return;
                 }
                 if (key < cur) {

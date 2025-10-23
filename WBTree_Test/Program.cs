@@ -2,7 +2,9 @@
 
 using AlgoQuora;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Disassemblers;
 using BenchmarkDotNet.Running;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Numerics;
@@ -16,7 +18,7 @@ internal class Program {
         Random rnd = new(1);
         int next(int max = 10000) { 
             //return rnd.Next(0, 100);
-            return rnd.Next(0, max);
+            return rnd.Next(0, max+1);
         }
 
         // avr depth
@@ -49,15 +51,31 @@ internal class Program {
         {
             for (int j = 0; j < 10; j++) {
                 SortedListChecked<int> a = new();
-                for (int i = 0; i < 1000; i++) {
+                for (int i = 0; i < 10000; i++) {
                     a.Add(rnd.Next(0, 10));
                 }
-                a.RemoveAllOf(rnd.Next(0, 10));
+                //a.rototions_cnt = 0;
+                var cnt_removed = a.RemoveAllOf(rnd.Next(0, 10));
+                //Console.WriteLine($"{cnt_removed} {a.rototions_cnt}");
                 a.SelfCheckRules();
             }
         }
 
-        // merge test
+        {
+            for (int i_ = 0; i_ < 100; i_++) {
+                SortedListChecked<int> a = new();
+                SortedListChecked<int> b = new();
+                var c1 = next(10000);
+                var c2 = next(10);
+                if (next(1) == 1) (c1, c2) = (c2, c1);
+                for (int i = 0; i < c1; i++) a.Add(next(c1));
+                for (int i = 0; i < c2; i++) b.Add(rnd.Next(c1+1, c1+1+c2));
+                a.Append(b);
+                a.SelfCheckRules();
+            }
+        }
+
+        // split-merge test
         {
             int max_split = 0;
             int max_merge = 0;
@@ -175,17 +193,31 @@ public class MyBenchmarks {
     }
 
     public MyBenchmarks() {
-
+        clear();
+        for (int i = 0; i < N; i++) { filled.Add(next()); }
     }
-
+    SortedListChecked<int> filled = new();
     SortedSet<int> sbt = new();
     Set<int> set = new();
+
+    [Benchmark]
+    public void WBT_SplitMerge() {
+        clear();
+        for (int i = 0; i < N; i++) {
+            var left_cnt = rnd.Next(0, N + 1);
+            var (l, r) = filled.Split(left_cnt);
+            if (l.Count != left_cnt) throw new Exception("bad");
+            filled.Append(l);
+            filled.Append(r);
+            if (filled.Count != N) throw new Exception("bad");
+        }
+    }
 
     [Benchmark]
     public void WBT_Set_Insert() {
         clear();
         Set<int> list = new();
-        for (int i = 0; i < 400000; i++) {
+        for (int i = 0; i < N; i++) {
             list.Add(i);
             list.Add(next());
         }
@@ -195,7 +227,7 @@ public class MyBenchmarks {
     public void SortedSet_Insert() {
         clear();
         SortedSet<int> list = new();
-        for (int i = 0; i < 400000; i++) {
+        for (int i = 0; i < N; i++) {
             list.Add(i);
             list.Add(next());
         }
@@ -316,5 +348,9 @@ public class MyBenchmarks {
             list.RemoveAllOf(rnd.Next(0, N / 4));
         }
     }
+
+
+
+
 
 }

@@ -35,7 +35,7 @@ namespace AlgoQuora {
         }
         [IM(256)] protected Node balanceL(Node t) { 
             //rototions_cnt++; 
-            if (too_small(cnt_safe(t.left.left), t.cnt)) t.left = rotateL(t.left, t.left.right); return rotateR(t, t.left); 
+            if (too_small(cnt_safe(t.left.left), t.cnt)) t.left = rotateL(t.left, t.left.right); return rotateR(t, t.left);
         }
         [IM(256)] protected bool balance_if_overflowR(ref Node t) { if (too_big(t.right.cnt, t.cnt)) { t = balanceR(t); return true; } return false; }
         [IM(256)] protected bool balance_if_overflowL(ref Node t) { if (too_big(t.left.cnt, t.cnt)) { t = balanceL(t); return true; } return false; }
@@ -59,12 +59,12 @@ namespace AlgoQuora {
             }
         }
         IEnumerable<T> left_to_right(Node t) {
-            if(!is_nil(t.left))
-                foreach (var item in left_to_right(t.left)) 
+            if (!is_nil(t.left))
+                foreach (var item in left_to_right(t.left))
                     yield return item;
             yield return t.val;
-            if(!is_nil(t.right))
-                foreach (var item in left_to_right(t.right)) 
+            if (!is_nil(t.right))
+                foreach (var item in left_to_right(t.right))
                     yield return item;
         }
         // оптимизированная версия Skip + Take - перечислить указанный диапазон
@@ -89,7 +89,9 @@ namespace AlgoQuora {
 
         [InlineArray(64)] struct MyInlineArray { private Node _element0; }
         public IEnumerable<T> Range(int pos = 0) {
+
             if (is_nil(root)) yield break;
+
             var stack = new MyInlineArray();
             var t = root;
             int stack_i = 0;
@@ -108,34 +110,30 @@ namespace AlgoQuora {
             }
 
             // все что осталось на стеке обрабатываем без проверок.
+
             while (true) {
 
                 if (stack_i == 0) yield break;
                 t = stack[--stack_i];
                 yield return t.val;
 
-                if (is_nil(t.right)) continue; // to next stack
-
-                while (true) {
+                if (!is_nil(t.right)) {
                     t = t.right;
-                    if (!is_nil(t.left)) {
-                        stack[stack_i++] = t;
+                    while (true) {
+                        if (!is_nil(t.left)) {
+                            stack[stack_i++] = t;
+                            t = t.left;
+                        } else {
+                            yield return t.val;
+                            if (is_nil(t.right)) break;
+                            t = t.right;
+                        }
                     }
-                    t = t.left;
                 }
-
-                //if (!is_nil(t.right)) {
-                //    t = t.right;
-                //    break;
-                //} else {
-                //    if (stack_i == 0) yield break;
-                //    t = stack[--stack_i];
-                //    yield return t.val;
-                //}
             }
         }
         public IEnumerable<T> Range(int l, int r) => Range(l).Take(r - l + 1);
-        public IEnumerator<T> GetEnumerator() => 
+        public IEnumerator<T> GetEnumerator() =>
             is_nil(root) ? Enumerable.Empty<T>().GetEnumerator() : left_to_right(root).GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         protected Node get_at(int pos) {
@@ -173,11 +171,11 @@ namespace AlgoQuora {
             if (left == null) return right;
             if (right == null) return left;
 
-            if (right.left == null) { 
-                right.left = left; 
+            if (right.left == null) {
+                right.left = left;
                 right.cnt += left.cnt;
                 balance_if_overflowL(ref right);
-                return right; 
+                return right;
             }
 
             var min = extract_leftmost(ref right);
@@ -223,7 +221,7 @@ namespace AlgoQuora {
                     right = t;
 
                     upd(t);
-                    if(!is_nil(t.right)) 
+                    if (!is_nil(t.right))
                         balance_if_overflowR_rec(ref right);
                 } else {
                     if (is_nil(t.right)) {
@@ -234,7 +232,7 @@ namespace AlgoQuora {
                     left = t;
 
                     upd(t);
-                    if (!is_nil(t.left)) 
+                    if (!is_nil(t.left))
                         balance_if_overflowL_rec(ref left);
                 }
 
@@ -248,7 +246,7 @@ namespace AlgoQuora {
         public T RemoveAt(Index index) {
             var i = ActualIndex(index);
             Debug.Assert(i >= 0 && i < Count);
-            int key = i+1;
+            int key = i + 1;
             T res;
             void func(ref Node t) {
                 var cur = t.cnt - cnt_safe(t.right);
@@ -259,12 +257,12 @@ namespace AlgoQuora {
                 }
                 if (key < cur) {
                     func(ref t.left);
-                    t.cnt--; 
+                    t.cnt--;
                     if (t.right != null) balance_if_overflowR(ref t);
                 } else {
                     key -= cur;
                     func(ref t.right);
-                    t.cnt--; 
+                    t.cnt--;
                     if (t.left != null) balance_if_overflowL(ref t);
                 }
             }
@@ -300,12 +298,12 @@ namespace AlgoQuora {
         }
         [IM(256)] public BSResult BinarySearch_Last(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
             int i = _First(x => !check(x), l) - 1;
-            if (i > r) i = Math.Min(r, Count-1);
+            if (i > r) i = Math.Min(r, Count - 1);
             return new(i, i >= l);
         }
         [IM(256)] public BSResult BinarySearch_First(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
             int i = _First(check, l);
-            return new(i, i <= Math.Min(r,Count-1));
+            return new(i, i <= Math.Min(r, Count - 1));
         }
     }
 }

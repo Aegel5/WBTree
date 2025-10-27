@@ -67,6 +67,74 @@ namespace AlgoQuora {
                 foreach (var item in left_to_right(t.right)) 
                     yield return item;
         }
+        // оптимизированная версия Skip + Take - перечислить указанный диапазон
+        // удалять во время перечесления нельзя
+        //public IEnumerable<T> Range(int l = 0, int r = int.MaxValue) {
+        //    if (is_nil(root)) return Enumerable.Empty<T>();
+        //    IEnumerable<T> func(Node t, int pos) {
+        //        var cnt_left = cnt_safe(t.left);
+        //        if (cnt_left > 0 && cnt_left > pos) {
+        //            foreach (var item in func(t.left, pos)) yield return item;
+        //        }
+        //        if (cnt_left >= pos) 
+        //            yield return t.val;
+        //        if (!is_nil(t.right)) {
+        //            pos -= cnt_left + 1;
+        //            foreach (var item in func(t.right, pos)) yield return item;
+        //        }
+        //    }
+        //    var res = func(root, l);
+        //    return r == int.MaxValue ? res : res.Take(r - l + 1);
+        //}
+
+        [InlineArray(64)] struct MyInlineArray { private Node _element0; }
+        public IEnumerable<T> Range(int pos = 0) {
+            if (is_nil(root)) yield break;
+            var stack = new MyInlineArray();
+            var t = root;
+            int stack_i = 0;
+            while (true) {
+                var cnt_left = cnt_safe(t.left);
+                if (cnt_left > 0 && cnt_left > pos) {
+                    stack[stack_i++] = t;
+                    t = t.left;
+                    continue;
+                }
+                if (cnt_left >= pos) { yield return t.val; }
+                pos -= cnt_left + 1;
+
+                if (is_nil(t.right)) break;
+                t = t.right;
+            }
+
+            // все что осталось на стеке обрабатываем без проверок.
+            while (true) {
+
+                if (stack_i == 0) yield break;
+                t = stack[--stack_i];
+                yield return t.val;
+
+                if (is_nil(t.right)) continue; // to next stack
+
+                while (true) {
+                    t = t.right;
+                    if (!is_nil(t.left)) {
+                        stack[stack_i++] = t;
+                    }
+                    t = t.left;
+                }
+
+                //if (!is_nil(t.right)) {
+                //    t = t.right;
+                //    break;
+                //} else {
+                //    if (stack_i == 0) yield break;
+                //    t = stack[--stack_i];
+                //    yield return t.val;
+                //}
+            }
+        }
+        public IEnumerable<T> Range(int l, int r) => Range(l).Take(r - l + 1);
         public IEnumerator<T> GetEnumerator() => 
             is_nil(root) ? Enumerable.Empty<T>().GetEnumerator() : left_to_right(root).GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

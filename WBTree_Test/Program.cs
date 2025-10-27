@@ -61,6 +61,21 @@ internal class Program {
             }
         }
 
+        // remove while enumerate
+        //{
+        //    for (int j = 0; j < 10; j++) {
+        //        Set<int> a = new(Enumerable.Range(1,100));
+        //        var check = a.ToList();
+        //        foreach (var item in next(1)==1 ? a : a.Skip(next(a.Count))) {
+        //            if (next(1) == 1) {
+        //                a.Remove(item);
+        //                check.Remove(item);
+        //            }
+        //        }
+        //        Assert(a.SequenceEqual(check));
+        //    }
+        //}
+
         {
             for (int i_ = 0; i_ < 100; i_++) {
                 SortedListChecked<int> a = new();
@@ -200,18 +215,18 @@ public class MyBenchmarks {
     SortedSet<int> sbt = new();
     Set<int> set = new();
 
-    [Benchmark]
-    public void WBT_SplitMerge() {
-        clear();
-        for (int i = 0; i < N; i++) {
-            var left_cnt = rnd.Next(0, N + 1);
-            var (l, r) = filled.Split(left_cnt);
-            if (l.Count != left_cnt) throw new Exception("bad");
-            filled.Append(l);
-            filled.Append(r);
-            if (filled.Count != N) throw new Exception("bad");
-        }
-    }
+    //[Benchmark]
+    //public void WBT_SplitMerge() {
+    //    clear();
+    //    for (int i = 0; i < N; i++) {
+    //        var left_cnt = rnd.Next(0, N + 1);
+    //        var (l, r) = filled.Split(left_cnt);
+    //        if (l.Count != left_cnt) throw new Exception("bad");
+    //        filled.Append(l);
+    //        filled.Append(r);
+    //        if (filled.Count != N) throw new Exception("bad");
+    //    }
+    //}
 
     [Benchmark]
     public void WBT_Set_Insert() {

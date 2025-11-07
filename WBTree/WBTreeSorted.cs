@@ -20,6 +20,15 @@ namespace AlgoQuora {
             }
             return false;
         }
+        protected Node _Find(T node) {
+            var t = root;
+            while (!is_nil(t)) {
+                int cmp = Compare(node, t.val);
+                if (cmp == 0) return t;
+                t = cmp < 0 ? t.left : t.right;
+            }
+            return null;
+        }
         protected int _RemoveAll(T node) {
             int func(ref Node t) {
                 int count;

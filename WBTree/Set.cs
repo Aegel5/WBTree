@@ -14,11 +14,19 @@ namespace AlgoQuora {
         public int CountOf(T node) => Contains(node) ? 1 : 0;
         public bool Add(T node) => _Add(node, skip_if_equal: true).added;
         [IM(256)] public bool Remove(T node) => _Remove(node);
-        public BSResult More(T val, int l = 0, int r = int.MaxValue) => BinarySearch_First(x => Compare(x, val) > 0, l, r);
-        public BSResult MoreEq(T val, int l = 0, int r = int.MaxValue) => BinarySearch_First(x => Compare(x, val) >= 0, l, r);
-        public BSResult Less(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last(x => Compare(x, val) < 0, l, r);
-        public BSResult LessEq(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last(x => Compare(x, val) <= 0, l, r);
-        public int IndexOf(T val) => MoreEq(val);
+
+        public BSResult_Index More_Index(T val, int l = 0, int r = int.MaxValue) => BinarySearch_First_Index(x => Compare(x, val) > 0, l, r);
+        public BSResult_Index MoreEq_Index(T val, int l = 0, int r = int.MaxValue) => BinarySearch_First_Index(x => Compare(x, val) >= 0, l, r);
+        public BSResult_Index Less_Index(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last_Index(x => Compare(x, val) < 0, l, r);
+        public BSResult_Index LessEq_Index(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last_Index(x => Compare(x, val) <= 0, l, r);
+
+        public BSResult<T> More(T val, int l = 0, int r = int.MaxValue) => BinarySearch_First(x => Compare(x, val) > 0, l, r);
+        public BSResult<T> MoreEq(T val, int l = 0, int r = int.MaxValue) => BinarySearch_First(x => Compare(x, val) >= 0, l, r);
+
+        // этого пока нет
+        //public BSResult<T> Less(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last_Index(x => Compare(x, val) < 0, l, r);
+        //public BSResult<T> LessEq(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last_Index(x => Compare(x, val) <= 0, l, r);
+        public int IndexOf(T val) => MoreEq_Index(val);
 
     }
 
@@ -26,7 +34,7 @@ namespace AlgoQuora {
         public MultiSet(IEnumerable<T> col) { foreach (var item in col) { Add(item); } }
         public MultiSet() { }
         new public bool Add(T val) => _Add(val, skip_if_equal: false).added;
-        new public int CountOf(T val) => More(val) - MoreEq(val);
+        new public int CountOf(T val) => More_Index(val) - MoreEq_Index(val);
         public int RemoveAllOf(T val) => _RemoveAll(val);
     }
 }

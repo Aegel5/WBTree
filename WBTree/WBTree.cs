@@ -58,15 +58,17 @@ namespace AlgoQuora {
                 balance_if_overflowL(ref t);
             }
         }
-        IEnumerable<T> left_to_right(Node t) {
-            if (!is_nil(t.left))
-                foreach (var item in left_to_right(t.left))
-                    yield return item;
-            yield return t.val;
-            if (!is_nil(t.right))
-                foreach (var item in left_to_right(t.right))
-                    yield return item;
-        }
+
+        // потестить на net10
+        //IEnumerable<T> left_to_right(Node t) {
+        //    if (!is_nil(t.left))
+        //        foreach (var item in left_to_right(t.left))
+        //            yield return item;
+        //    yield return t.val;
+        //    if (!is_nil(t.right))
+        //        foreach (var item in left_to_right(t.right))
+        //            yield return item;
+        //}
         // оптимизированная версия Skip + Take - перечислить указанный диапазон
         // удалять во время перечесления нельзя
         //public IEnumerable<T> Range(int l = 0, int r = int.MaxValue) {
@@ -87,14 +89,18 @@ namespace AlgoQuora {
         //    return r == int.MaxValue ? res : res.Take(r - l + 1);
         //}
 
-        [InlineArray(64)] struct MyInlineArray { private Node _element0; }
+        [InlineArray(60)] struct MyInlineArray { private Node _element0; }
         public IEnumerable<T> Range(int pos = 0) {
 
             if (is_nil(root)) yield break;
 
             var stack = new MyInlineArray();
+
             var t = root;
             int stack_i = 0;
+
+            // Делаем log проверок.
+
             while (true) {
                 var cnt_left = cnt_safe(t.left);
                 if (cnt_left > 0 && cnt_left > pos) {
@@ -115,13 +121,17 @@ namespace AlgoQuora {
 
                 if (stack_i == 0) yield break;
                 t = stack[--stack_i];
+                //t = Unsafe.Add(ref stack[0], --stack_i);
                 yield return t.val;
 
                 if (!is_nil(t.right)) {
                     t = t.right;
                     while (true) {
                         if (!is_nil(t.left)) {
+
+                            //Unsafe.Add(ref stack[0], stack_i++) = t;
                             stack[stack_i++] = t;
+
                             t = t.left;
                         } else {
                             yield return t.val;
@@ -132,9 +142,10 @@ namespace AlgoQuora {
                 }
             }
         }
+
+
         public IEnumerable<T> Range(int l, int r) => Range(l).Take(r - l + 1);
-        public IEnumerator<T> GetEnumerator() =>
-            is_nil(root) ? Enumerable.Empty<T>().GetEnumerator() : left_to_right(root).GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => Range(0).GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         protected Node get_at(int pos) {
             Debug.Assert(pos >= 0 && pos < Count);
@@ -269,41 +280,72 @@ namespace AlgoQuora {
             func(ref root);
             return res;
         }
-        public struct BSResult {
-            public int Index { get; init; }
-            public bool Ok { get; init; }
-            [IM(256)] public static implicit operator int(BSResult value) => value.Index;
-            [IM(256)] public static implicit operator Index(BSResult value) => value.Index;
-            [IM(256)] public static implicit operator long(BSResult value) => value.Index;
-            public BSResult(int i, bool ok) { Index = i; Ok = ok; }
+        public struct BSResult_Index {
+            public int index;
+            public bool Ok;
+            [IM(256)] public static implicit operator int(BSResult_Index v) => v.index;
+            public override string ToString() => index.ToString();
+            public BSResult_Index(int v, bool ok) { index = v; Ok = ok; }
         }
-        int _First(Func<T, bool> check, int l = 0) {
+
+        public struct BSResult<T> {
+            public T val;
+            public bool Ok;
+            [IM(256)] public static implicit operator T(BSResult<T> v) => v.val;
+            public override string ToString() => val.ToString();
+            public BSResult(T v, bool ok) { val = v; Ok = ok; }
+        }
+        int _First_Index(Func<T, bool> check, int l = 0) {
             var t = root;
-            int offset = 0;
-            int res = Count; // последний верный ответ.
+            int res = 0; 
             while (!is_nil(t)) {
                 var l_cnt = cnt_safe(t.left);
-                if (l <= l_cnt// имеем ли право проверять текущий элемент?
-                    && check(t.val)) {  // обычный поиск в дереве. используем технику "последнего верного ответа"
-                    res = l_cnt + offset; // верный ответ
-                    t = t.left; // идем влево, так как справа 100% уже понятно.
+                if (l <= l_cnt // имеем ли право проверять текущий элемент?
+                    && check(t.val)) {  
+                    t = t.left; 
                 } else {
-                    // текущий элемент проверять запрещено. просто идем вправо.
-                    offset += l_cnt + 1;
-                    l -= offset;
+                    res += l_cnt + 1;
+                    l -= res;
                     t = t.right;
                 }
             }
             return res;
         }
-        [IM(256)] public BSResult BinarySearch_Last(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
-            int i = _First(x => !check(x), l) - 1;
+
+        int _First(Func<T, bool> check, out T last_res, int l = 0) {
+            var t = root;
+            int res = 0;
+            last_res = default;
+            while (!is_nil(t)) {
+                var l_cnt = cnt_safe(t.left);
+                if (l <= l_cnt // имеем ли право проверять текущий элемент?
+                    && check(t.val)) {
+                    last_res = t.val;
+                    t = t.left;
+                } else {
+                    res += l_cnt + 1;
+                    l -= res;
+                    t = t.right;
+                }
+            }
+            return res;
+        }
+
+        [IM(256)] public BSResult_Index BinarySearch_Last_Index(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
+            int i = _First_Index(x => !check(x), l) - 1;
             if (i > r) i = Math.Min(r, Count - 1);
             return new(i, i >= l);
         }
-        [IM(256)] public BSResult BinarySearch_First(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
-            int i = _First(check, l);
+        [IM(256)] public BSResult_Index BinarySearch_First_Index(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
+            int i = _First_Index(check, l);
             return new(i, i <= Math.Min(r, Count - 1));
+        }
+
+        // TODO - объеденить чтобы всегда был индекс и значение?
+        [IM(256)]
+        public BSResult<T> BinarySearch_First(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
+            int i = _First(check, out var res, l);
+            return new(res, i <= Math.Min(r, Count - 1));
         }
     }
 }

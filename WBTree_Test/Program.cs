@@ -188,6 +188,10 @@ internal class Program {
 
     static void Main(string[] args) {
         Test();
+        //var pfujdifu = new MyBenchmarks();
+        //pfujdifu.WBT_Set_BS1();
+        //Console.WriteLine(pfujdifu.RES);
+        //return;
         BenchmarkRunner.Run(typeof(Program).Assembly
             //, new Config()
             );
@@ -200,11 +204,10 @@ internal class Program {
 //[DisassemblyDiagnoser]
 public class MyBenchmarks {
     int N = 300000;
-    Random rnd = new(44);
-    int seed = new Random().Next(9);
-    int next() { return rnd.Next(0,N); }
+    Random rnd;
+    int next(int max = int.MaxValue) { return rnd.Next(0,max == int.MaxValue?N:max+1); }
     public void clear() {
-        rnd = new Random(seed);
+        rnd = new Random(999);
     }
 
     public MyBenchmarks() {
@@ -214,6 +217,8 @@ public class MyBenchmarks {
     SortedListChecked<int> filled = new();
     SortedSet<int> sbt = new();
     Set<int> set = new();
+
+    public long RES = 0;
 
     //[Benchmark]
     //public void WBT_SplitMerge() {
@@ -228,141 +233,182 @@ public class MyBenchmarks {
     //    }
     //}
 
+    //[Benchmark]
+    //public void WBT_Set_Range() {
+    //    clear();
+    //    RES=filled.Range(next(filled.Count)).Where(x => x%4==1).Count();
+    //    if (RES != 27676) throw new Exception("bad");
+    //}
+
     [Benchmark]
-    public void WBT_Set_Insert() {
+    public void WBT_Set_ENUM() {
         clear();
-        Set<int> list = new();
-        for (int i = 0; i < N; i++) {
-            list.Add(i);
-            list.Add(next());
-        }
+        RES = filled.Where(x => x % 4 == 1).Count();
+        if (RES < 5) throw new Exception("bad");
     }
+    //[Benchmark]
+    //public void WBT_Set_ENUM2() {
+    //    clear();
+    //    RES = filled.Range(0).Where(x => x % 4 == 1).Count();
+    //    if (RES < 5) throw new Exception("bad");
+    //}
 
-    [Benchmark]
-    public void SortedSet_Insert() {
-        clear();
-        SortedSet<int> list = new();
-        for (int i = 0; i < N; i++) {
-            list.Add(i);
-            list.Add(next());
-        }
-    }
-
-    [Benchmark]
-    public void WBT_Set_Add10() {
-        clear();
-        sbt.Clear();
-        for (int i = 0; i < 10; i++) { sbt.Add(next()); }
-    }
-
-    [Benchmark]
-    public void SortedSet_Add10() {
-        clear();
-        set.Clear();
-        for (int i = 0; i < 10; i++) { set.Add(next()); }
-    }
-
-    [Benchmark]
-    public void WBT_Set_Add1000() {
-        clear();
-        sbt.Clear();
-        for (int i = 0; i < 1000; i++) { sbt.Add(next()); }
-    }
-
-    [Benchmark]
-    public void SortedSet_Add1000() {
-        clear();
-        set.Clear();
-        for (int i = 0; i < 1000; i++) { set.Add(next()); }
-    }
-
-    [Benchmark]
-    public void WBT_Set_AddRemoveContainsRnd() {
-        clear();
-        Set<int> list = new();
-        for (int i = 0; i < N; i++) {
-            list.Add(next());
-            list.Remove(next());
-            list.Contains(next());
-        }
-    }
-
-    [Benchmark]
-    public void SortedSet_AddRemoveContainsRnd() {
-        clear();
-        SortedSet<int> list = new();
-        for (int i = 0; i < N; i++) {
-            list.Add(next());
-            list.Remove(next());
-            list.Contains(next());
-        }
-    }
+    //[Benchmark]
+    //public void WBT_Set_BS1() {
+    //    clear();
+    //    RES = 0;
+    //    for (int i = 0; i < N; i++) {
+    //        RES += filled.More(next());
+    //    }
+    //    if (RES != 45000300593) throw new Exception("bad");
+    //}
 
 
+    //[Benchmark]
+    //public void WBT_Set_Insert() {
+    //    clear();
+    //    Set<int> list = new();
+    //    for (int i = 0; i < N; i++) {
+    //        list.Add(i);
+    //        list.Add(next());
+    //    }
+    //}
 
-    [Benchmark]
-    public void WBT_Set_AddRemoveLast() {
-        Set<int> list = new();
-        for (int i = 0; i < N; i++) {
-            list.Add(i);
-        }
-        for (int i = 0; i < N; i++) {
-            list.Remove(i);
-        }
-    }
+    //[Benchmark]
+    //public void WBT_Set_Insert() {
+    //    clear();
+    //    Set<int> list = new();
+    //    for (int i = 0; i < N; i++) {
+    //        list.Add(i);
+    //        list.Add(next());
+    //    }
+    //}
 
-    [Benchmark]
-    public void SortedSet_AddRemoveLast() {
-        SortedSet<int> list = new();
-        for (int i = 0; i < N; i++) {
-            list.Add(i);
-        }
-        for (int i = 0; i < N; i++) {
-            list.Remove(i);
-        }
-    }
+    //[Benchmark]
+    //public void SortedSet_Insert() {
+    //    clear();
+    //    SortedSet<int> list = new();
+    //    for (int i = 0; i < N; i++) {
+    //        list.Add(i);
+    //        list.Add(next());
+    //    }
+    //}
 
-    [Benchmark]
-    public void WBT_Map_AddRemoveRnd() {
-        clear();
-        Map<int, int> list = new();
-        for (int i = 0; i < N; i++) {
-            list.Add(next(), next());
-            list.Remove(next());
-        }
-    }
+    //[Benchmark]
+    //public void WBT_Set_Add10() {
+    //    clear();
+    //    sbt.Clear();
+    //    for (int i = 0; i < 10; i++) { sbt.Add(next()); }
+    //}
 
-    [Benchmark]
-    public void SortedDictionary_AddRemoveRnd() {
-        clear();
-        SortedDictionary<int, int> list = new();
-        for (int i = 0; i < N; i++) {
-            list.TryAdd(next(), next());
-            list.Remove(next());
-        }
-    }
+    //[Benchmark]
+    //public void SortedSet_Add10() {
+    //    clear();
+    //    set.Clear();
+    //    for (int i = 0; i < 10; i++) { set.Add(next()); }
+    //}
 
-    [Benchmark]
-    public void Dictionary_AddRemoveRnd() {
-        clear();
-        Dictionary<int, int> list = new();
-        for (int i = 0; i < N; i++) {
-            list.TryAdd(next(), next());
-            list.Remove(next());
-        }
-    }
+    //[Benchmark]
+    //public void WBT_Set_Add1000() {
+    //    clear();
+    //    sbt.Clear();
+    //    for (int i = 0; i < 1000; i++) { sbt.Add(next()); }
+    //}
 
-    [Benchmark]
-    public void WBT_MultiSet_AddRemoveAll() {
-        clear();
-        MultiSet<int> list = new();
-        for (int i = 0; i < N; i++) {
-            list.Add(rnd.Next(0, N / 4));
-        }
-        for (int i = 0; i < N; i++) {
-            list.RemoveAllOf(rnd.Next(0, N / 4));
-        }
-    }
+    //[Benchmark]
+    //public void SortedSet_Add1000() {
+    //    clear();
+    //    set.Clear();
+    //    for (int i = 0; i < 1000; i++) { set.Add(next()); }
+    //}
+
+    //[Benchmark]
+    //public void WBT_Set_AddRemoveContainsRnd() {
+    //    clear();
+    //    Set<int> list = new();
+    //    for (int i = 0; i < N; i++) {
+    //        list.Add(next());
+    //        list.Remove(next());
+    //        list.Contains(next());
+    //    }
+    //}
+
+    //[Benchmark]
+    //public void SortedSet_AddRemoveContainsRnd() {
+    //    clear();
+    //    SortedSet<int> list = new();
+    //    for (int i = 0; i < N; i++) {
+    //        list.Add(next());
+    //        list.Remove(next());
+    //        list.Contains(next());
+    //    }
+    //}
+
+
+
+    //[Benchmark]
+    //public void WBT_Set_AddRemoveLast() {
+    //    Set<int> list = new();
+    //    for (int i = 0; i < N; i++) {
+    //        list.Add(i);
+    //    }
+    //    for (int i = 0; i < N; i++) {
+    //        list.Remove(i);
+    //    }
+    //}
+
+    //[Benchmark]
+    //public void SortedSet_AddRemoveLast() {
+    //    SortedSet<int> list = new();
+    //    for (int i = 0; i < N; i++) {
+    //        list.Add(i);
+    //    }
+    //    for (int i = 0; i < N; i++) {
+    //        list.Remove(i);
+    //    }
+    //}
+
+    //[Benchmark]
+    //public void WBT_Map_AddRemoveRnd() {
+    //    clear();
+    //    Map<int, int> list = new();
+    //    for (int i = 0; i < N; i++) {
+    //        list.Add(next(), next());
+    //        list.Remove(next());
+    //    }
+    //}
+
+    //[Benchmark]
+    //public void SortedDictionary_AddRemoveRnd() {
+    //    clear();
+    //    SortedDictionary<int, int> list = new();
+    //    for (int i = 0; i < N; i++) {
+    //        list.TryAdd(next(), next());
+    //        list.Remove(next());
+    //    }
+    //}
+
+    //[Benchmark]
+    //public void Dictionary_AddRemoveRnd() {
+    //    clear();
+    //    Dictionary<int, int> list = new();
+    //    for (int i = 0; i < N; i++) {
+    //        list.TryAdd(next(), next());
+    //        list.Remove(next());
+    //    }
+    //}
+
+    //[Benchmark]
+    //public void WBT_MultiSet_AddRemoveAll() {
+    //    clear();
+    //    MultiSet<int> list = new();
+    //    for (int i = 0; i < N; i++) {
+    //        list.Add(rnd.Next(0, N / 4));
+    //    }
+    //    for (int i = 0; i < N; i++) {
+    //        list.RemoveAllOf(rnd.Next(0, N / 4));
+    //    }
+    //}
 
 
 

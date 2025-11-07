@@ -31,14 +31,20 @@ namespace AlgoQuora {
         public bool Remove(TKey key) => _Remove(rec(key));
         public MapRecord<TKey, TValue> ByIndex(Index i) => get_at(i).val;
         public ref TValue ByIndexValue(Index i) => ref get_at(i).val.Value;
-        public BSResult More(TKey val, int l = 0, int r = int.MaxValue) => BinarySearch_First(x => CompareKey(x.Key, val) > 0, l, r);
-        public BSResult MoreEq(TKey val, int l = 0, int r = int.MaxValue) => BinarySearch_First(x => CompareKey(x.Key, val) >= 0, l, r);
-        public BSResult Less(TKey val, int l = 0, int r = int.MaxValue) => BinarySearch_Last(x => CompareKey(x.Key, val) < 0, l, r);
-        public BSResult LessEq(TKey val, int l = 0, int r = int.MaxValue) => BinarySearch_Last(x => CompareKey(x.Key, val) <= 0, l, r);
+        public BSResult_Index More_Index(TKey val, int l = 0, int r = int.MaxValue) => BinarySearch_First_Index(x => CompareKey(x.Key, val) > 0, l, r);
+        public BSResult_Index MoreEq_Index(TKey val, int l = 0, int r = int.MaxValue) => BinarySearch_First_Index(x => CompareKey(x.Key, val) >= 0, l, r);
+        public BSResult_Index Less_Index(TKey val, int l = 0, int r = int.MaxValue) => BinarySearch_Last_Index(x => CompareKey(x.Key, val) < 0, l, r);
+        public BSResult_Index LessEq_Index(TKey val, int l = 0, int r = int.MaxValue) => BinarySearch_Last_Index(x => CompareKey(x.Key, val) <= 0, l, r);
+        public bool TryGetValue(TKey key, out TValue res){
+            var node = _Find(rec(key)); 
+            if (is_nil(node)) { res = default; return false; }
+            res = node.val.Value; 
+            return true;
+        }
     }
     public class MultiMap<TKey, TValue> : Map<TKey, TValue> {
         new public bool Add(TKey key, TValue value)  => _Add(rec(key,value), skip_if_equal: false).added;
         public int RemoveAllOf(TKey key) => _RemoveAll(rec(key));
-        new public int CountOf(TKey key) => More(key) - MoreEq(key);
+        new public int CountOf(TKey key) => More_Index(key) - MoreEq_Index(key);
     }
 }

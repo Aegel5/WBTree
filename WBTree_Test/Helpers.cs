@@ -135,13 +135,13 @@ class SortedList_Tester<T> where T : new() {
         if (lst.Contains(v) != checker.Contains(v)) throw new Exception("bad");
     }
     public void More(T v) {
-        var i1 = lst.More(v);
+        var i1 = lst.More_Index(v);
         int i2 = 0;
         for (i2 = 0; i2 < checker.Count; i2++) {
             if (Compare(checker[i2], v)>0) break;
         }
         Assert(i1==i2);
-        Assert(i1.Ok == (i1.Index >= 0 && i1.Index < checker.Count));
+        Assert(i1.Ok == (i1 >= 0 && i1 < checker.Count));
     }
     public void Check() {
         lst.SelfCheckRules();

@@ -181,6 +181,7 @@ internal class Program {
                     tester.Contains(next());
 
                     tester.More_Index(next());
+                    tester.LessEq(tester.checker[next(tester.Count-1)]); // существующий
                     tester.LessEq(next());
                     tester.MoreEq(next());
                 }

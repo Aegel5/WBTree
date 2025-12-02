@@ -76,7 +76,7 @@ class SortedListChecked<T> : MultiSet<T> where T : new() {
 class SortedList_Tester<T> where T : new() {
     static void Assert(bool v) { if (!v) throw new Exception("bad"); }
     public SortedListChecked<T> lst = new();
-    List<T> checker = new();
+    public List<T> checker = new();
 
     int Compare(T v1, T v2) => Comparer<T>.Default.Compare(v1, v2);
 

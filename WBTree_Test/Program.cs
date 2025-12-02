@@ -25,7 +25,7 @@ internal class Program {
         {
             SortedListChecked<int> a = new();
             for (int q = 0; q < 100000; q++) {
-                a.Add(rnd.Next(0, 100000));
+                a.Add(next(100000));
             }
             a.SelfCheckRules();
             Console.WriteLine($"avr depth: {a.tot_depth / a.cnt_depth}, max={a.max_depth}");
@@ -61,7 +61,7 @@ internal class Program {
             }
         }
 
-        // remove while enumerate
+        // remove while enumerate - НЕЛЬЗЯ!
         //{
         //    for (int j = 0; j < 10; j++) {
         //        Set<int> a = new(Enumerable.Range(1,100));
@@ -76,6 +76,7 @@ internal class Program {
         //    }
         //}
 
+        // Merge test
         {
             for (int i_ = 0; i_ < 100; i_++) {
                 SortedListChecked<int> a = new();
@@ -158,6 +159,8 @@ internal class Program {
                         int k = 0;
                     }
 
+                    tester.CountOf(next());
+
                     tester.Add(next(), (next() & 1) == 0);
                     tester.Check();
                     tester.Remove(next());
@@ -167,16 +170,21 @@ internal class Program {
                         tester.Check();
                     }
 
-                    tester.CountOf(next());
-                    if (tester.Count > 0) {
-                        tester.Get(rnd.Next(0, tester.Count));
-                        tester.Add(next());
-                        tester.RemoveAt(rnd.Next(0, tester.Count));
-                        tester.Check();
-                    }
+                    tester.Add(next());
+
+                    tester.Get(rnd.Next(0, tester.Count));
+
+                    tester.Add(next());
+                    tester.RemoveAt(rnd.Next(0, tester.Count));
+                    tester.Check();
+
                     tester.Contains(next());
-                    tester.More(next());
+
+                    tester.More_Index(next());
+                    tester.LessEq(next());
+                    tester.MoreEq(next());
                 }
+                Console.WriteLine(tester.lst.Count);
             }
             Console.WriteLine("Test OK");
         } 

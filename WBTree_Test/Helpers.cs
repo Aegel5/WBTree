@@ -134,7 +134,7 @@ class SortedList_Tester<T> where T : new() {
     public void Contains(T v) {
         if (lst.Contains(v) != checker.Contains(v)) throw new Exception("bad");
     }
-    public void More(T v) {
+    public void More_Index(T v) {
         var i1 = lst.More_Index(v);
         int i2 = 0;
         for (i2 = 0; i2 < checker.Count; i2++) {
@@ -143,6 +143,35 @@ class SortedList_Tester<T> where T : new() {
         Assert(i1==i2);
         Assert(i1.Ok == (i1 >= 0 && i1 < checker.Count));
     }
+
+    void check_bs(_WBTree<T>.BSResult<T> r, int i) {
+        if (i >= 0 && i < checker.Count) {
+            Assert(r.val.Equals(checker[i]));
+            Assert(r.Ok);
+        } else {
+            Assert(!r.Ok);
+            Assert(r.val.Equals(default(T)));
+        }
+    }
+
+    public void LessEq(T v) {
+        var i1 = lst.LessEq(v);
+        int i2 = 0;
+        for (i2 = checker.Count - 1; i2 >= 0; i2--) {
+            if (Compare(checker[i2], v) <= 0) break; // первый с конца нужный.
+        }
+        check_bs(i1, i2);
+    }
+
+    public void MoreEq(T v) {
+        var i1 = lst.MoreEq(v);
+        int i2 = 0;
+        for (i2 = 0; i2 < checker.Count; i2++) {
+            if (Compare(checker[i2], v) >= 0) break;
+        }
+        check_bs(i1, i2);
+    }
+
     public void Check() {
         lst.SelfCheckRules();
         if (lst.Count != checker.Count) throw new Exception("bad count");

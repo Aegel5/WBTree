@@ -331,6 +331,26 @@ namespace AlgoQuora {
             return res;
         }
 
+        // Тоже самое, что и _First только идем вправо, а не влево.
+        int _Last(Func<T, bool> check, out T last_res, int l = 0) {
+            var t = root;
+            int res = 0;
+            last_res = default;
+            while (!is_nil(t)) {
+                var l_cnt = cnt_safe(t.left);
+                if (l <= l_cnt // имеем ли право проверять текущий элемент?
+                    && check(t.val)) {
+                    last_res = t.val;
+                    res += l_cnt + 1;
+                    l -= res;
+                    t = t.right;
+                } else {
+                    t = t.left;
+                }
+            }
+            return res-1;
+        }
+
         [IM(256)] public BSResult_Index BinarySearch_Last_Index(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
             int i = _First_Index(x => !check(x), l) - 1;
             if (i > r) i = Math.Min(r, Count - 1);
@@ -341,11 +361,17 @@ namespace AlgoQuora {
             return new(i, i <= Math.Min(r, Count - 1));
         }
 
-        // TODO - объеденить чтобы всегда был индекс и значение?
+        // TODO - добавить индекс так как все равно находим его?
         [IM(256)]
         public BSResult<T> BinarySearch_First(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
             int i = _First(check, out var res, l);
             return new(res, i <= Math.Min(r, Count - 1));
+        }
+        [IM(256)]
+        public BSResult<T> BinarySearch_Last(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
+            int i = _Last(check, out var res, l);
+            if (i > r) i = Math.Min(r, Count - 1);
+            return new(res, i >= l);
         }
     }
 }

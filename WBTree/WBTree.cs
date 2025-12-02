@@ -289,11 +289,11 @@ namespace AlgoQuora {
         }
 
         public struct BSResult<T> {
-            public T val;
+            public T Val;
             public bool Ok;
-            [IM(256)] public static implicit operator T(BSResult<T> v) => v.val;
-            public override string ToString() => val.ToString();
-            public BSResult(T v, bool ok) { val = v; Ok = ok; }
+            [IM(256)] public static implicit operator T(BSResult<T> v) => v.Val;
+            public override string ToString() => Val.ToString();
+            public BSResult(T v, bool ok) { Val = v; Ok = ok; }
         }
         int _First_Index(Func<T, bool> check, int l = 0) {
             var t = root;

@@ -144,7 +144,7 @@ class SortedList_Tester<T> where T : new() {
         Assert(i1.Ok == (i1 >= 0 && i1 < checker.Count));
     }
 
-    void check_bs(_WBTree<T>.BSResult<T> r, int i) {
+    void check_bs(_WBTree<T>.BSResult r, int i) {
         if (i >= 0 && i < checker.Count) {
             Assert(r.Val.Equals(checker[i]));
             Assert(r.Ok);

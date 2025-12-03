@@ -23,10 +23,10 @@ namespace AlgoQuora {
         public BSResult_Index LessEq_Index(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last_Index(x => Compare(x, val) <= 0, l, r);
 
         // Значение
-        public BSResult<T> More(T val, int l = 0, int r = int.MaxValue) => BinarySearch_First(x => Compare(x, val) > 0, l, r);
-        public BSResult<T> MoreEq(T val, int l = 0, int r = int.MaxValue) => BinarySearch_First(x => Compare(x, val) >= 0, l, r);
-        public BSResult<T> Less(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last(x => Compare(x, val) < 0, l, r);
-        public BSResult<T> LessEq(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last(x => Compare(x, val) <= 0, l, r);
+        public BSResult More(T val, int l = 0, int r = int.MaxValue) => BinarySearch_First(x => Compare(x, val) > 0, l, r);
+        public BSResult MoreEq(T val, int l = 0, int r = int.MaxValue) => BinarySearch_First(x => Compare(x, val) >= 0, l, r);
+        public BSResult Less(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last(x => Compare(x, val) < 0, l, r);
+        public BSResult LessEq(T val, int l = 0, int r = int.MaxValue) => BinarySearch_Last(x => Compare(x, val) <= 0, l, r);
 
         public int IndexOf(T val) => MoreEq_Index(val);
 

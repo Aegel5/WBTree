@@ -288,10 +288,10 @@ namespace AlgoQuora {
             public BSResult_Index(int v, bool ok) { index = v; Ok = ok; }
         }
 
-        public struct BSResult<T> {
+        public struct BSResult {
             public T Val;
             public bool Ok;
-            [IM(256)] public static implicit operator T(BSResult<T> v) => v.Val;
+            [IM(256)] public static implicit operator T(BSResult v) => v.Val;
             public override string ToString() => Val.ToString();
             public BSResult(T v, bool ok) { Val = v; Ok = ok; }
         }
@@ -363,12 +363,12 @@ namespace AlgoQuora {
 
         // TODO - добавить индекс так как все равно находим его?
         [IM(256)]
-        public BSResult<T> BinarySearch_First(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
+        public BSResult BinarySearch_First(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
             int i = _First(check, out var res, l);
             return new(res, i <= Math.Min(r, Count - 1));
         }
         [IM(256)]
-        public BSResult<T> BinarySearch_Last(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
+        public BSResult BinarySearch_Last(Func<T, bool> check, int l = 0, int r = int.MaxValue) {
             int i = _Last(check, out var res, l);
             if (i > r) i = Math.Min(r, Count - 1);
             return new(res, i >= l);
